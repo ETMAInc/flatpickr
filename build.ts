@@ -101,7 +101,7 @@ function buildExtras(folder: "plugins" | "l10n") {
 
           return bundle.write({
             exports: folder === "l10n" ? "named" : "default",
-            format: "umd",
+            format: "esm",
             sourcemap: false,
             file: sourcePath.replace("src", "dist").replace(".ts", ".js"),
             name: customModuleNames[fileName] || fileName,

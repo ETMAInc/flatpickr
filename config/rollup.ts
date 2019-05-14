@@ -12,7 +12,7 @@ export const getConfig = (opts?: { dev: boolean }): RollupOptions => ({
   output: {
     file: "dist/flatpickr.js",
     name: "flatpickr",
-    format: "umd",
+    format: "esm",
     exports: "default",
     banner: `/* flatpickr v${pkg.version}, @license MIT */`,
   },
