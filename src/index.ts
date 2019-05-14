@@ -2664,62 +2664,38 @@ function FlatpickrInstance(
 }
 
 /* istanbul ignore next */
-function _flatpickr(
-  nodeList: ArrayLike<Node>,
-  config?: Options
-): Instance | Instance[] {
-  // static list
-  const nodes = Array.prototype.slice
-    .call(nodeList)
-    .filter(x => x instanceof HTMLElement) as HTMLElement[];
+if (typeof HTMLElement !== "undefined") {
+  // browser env
+  // HTMLCollection.prototype.flatpickr = NodeList.prototype.flatpickr = function(
+  //   config?: Options
+  // ) {
+  //   return _flatpickr(this, config);
+  // };
 
-  let instances: Instance[] = [];
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i];
-    try {
-      if (node.getAttribute("data-fp-omit") !== null) continue;
-
-      if (node._flatpickr !== undefined) {
-        node._flatpickr.destroy();
-        node._flatpickr = undefined;
-      }
-
-      node._flatpickr = FlatpickrInstance(node, config || {});
-      instances.push(node._flatpickr);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  return instances.length === 1 ? instances[0] : instances;
+  HTMLElement.prototype.flatpickr = function(config?: Options) {
+    return _flatpickr(this, config) as Instance;
+  };
 }
 
 /* istanbul ignore next */
-if (typeof HTMLElement !== "undefined") {
-  // browser env
-  HTMLCollection.prototype.flatpickr = NodeList.prototype.flatpickr = function(
-    config?: Options
-  ) {
-    return _flatpickr(this, config);
-  };
+function _flatpickr(
+  node: Node,
+  config?: Options
+): Instance {
+  if (node._flatpickr !== undefined) {
+    node._flatpickr.destroy();
+    node._flatpickr = undefined;
+  }
 
-  HTMLElement.prototype.flatpickr = function(config?: Options) {
-    return _flatpickr([this], config) as Instance;
-  };
+  node._flatpickr = FlatpickrInstance(node as HTMLElement, config || {});
 }
 
 /* istanbul ignore next */
 var flatpickr = function(
-  selector: ArrayLike<Node> | Node | string,
+  selector: Node,
   config?: Options
 ) {
-  if (typeof selector === "string") {
-    return _flatpickr(window.document.querySelectorAll(selector), config);
-  } else if (selector instanceof Node) {
-    return _flatpickr([selector], config);
-  } else {
-    return _flatpickr(selector, config);
-  }
+  return _flatpickr(selector, config);
 } as FlatpickrFn;
 
 /* istanbul ignore next */
@@ -2742,28 +2718,5 @@ flatpickr.setDefaults = (config: Options) => {
     ...(config as ParsedOptions),
   };
 };
-
-flatpickr.parseDate = createDateParser({});
-flatpickr.formatDate = createDateFormatter({});
-flatpickr.compareDates = compareDates;
-
-/* istanbul ignore next */
-if (typeof jQuery !== "undefined") {
-  (jQuery.fn as any).flatpickr = function(config: Options) {
-    return _flatpickr(this, config);
-  };
-}
-
-Date.prototype.fp_incr = function(days: number | string) {
-  return new Date(
-    this.getFullYear(),
-    this.getMonth(),
-    this.getDate() + (typeof days === "string" ? parseInt(days, 10) : days)
-  );
-};
-
-if (typeof window !== "undefined") {
-  window.flatpickr = flatpickr;
-}
 
 export default flatpickr;

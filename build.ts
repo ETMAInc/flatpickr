@@ -19,8 +19,8 @@ const version = `/* flatpickr v${pkg.version},, @license MIT */`;
 const paths = {
   themes: "./src/style/themes/*.styl",
   style: "./src/style/flatpickr.styl",
-  plugins: "./src/plugins",
-  l10n: "./src/l10n",
+  // plugins: "./src/plugins",
+  // l10n: "./src/l10n",
 };
 
 const customModuleNames: Record<string, string> = {
@@ -173,7 +173,7 @@ async function buildThemes() {
 }
 
 function setupWatchers() {
-  watch("./src/plugins", buildExtras("plugins"));
+  // watch("./src/plugins", buildExtras("plugins"));
   watch("./src/style/*.styl", () => {
     buildStyle();
     buildThemes();
@@ -239,8 +239,8 @@ function start() {
   buildScripts();
   buildStyle();
   buildThemes();
-  buildExtras("l10n")();
-  buildExtras("plugins")();
+  // buildExtras("l10n")();
+  // buildExtras("plugins")();
 }
 
 start();
