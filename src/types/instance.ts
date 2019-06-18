@@ -146,6 +146,7 @@ export type Instance = Elements &
 
 export interface FlatpickrFn {
   (selector: Node, config?: Options): Instance;
+  (selector: ArrayLike<Node>, config?: Options): Instance[];
   defaultConfig: ParsedOptions;
   l10ns: { [k in LocaleKey]?: CustomLocale } & { default: Locale };
   localize: (l10n: CustomLocale) => void;

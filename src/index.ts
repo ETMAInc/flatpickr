@@ -2679,23 +2679,45 @@ if (typeof HTMLElement !== "undefined") {
 
 /* istanbul ignore next */
 function _flatpickr(
-  node: Node,
+  nodeList: ArrayLike<Node>,
   config?: Options
-): Instance {
-  if (node._flatpickr !== undefined) {
-    node._flatpickr.destroy();
-    node._flatpickr = undefined;
+): Instance | Instance[] {
+  // static list
+  const nodes = Array.prototype.slice
+    .call(nodeList)
+    .filter(x => x instanceof HTMLElement) as HTMLElement[];
+
+  let instances: Instance[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    try {
+      if (node.getAttribute("data-fp-omit") !== null) continue;
+
+      if (node._flatpickr !== undefined) {
+        node._flatpickr.destroy();
+        node._flatpickr = undefined;
+      }
+
+      node._flatpickr = FlatpickrInstance(node, config || {});
+      instances.push(node._flatpickr);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  node._flatpickr = FlatpickrInstance(node as HTMLElement, config || {});
+  return instances.length === 1 ? instances[0] : instances;
 }
 
 /* istanbul ignore next */
 var flatpickr = function(
-  selector: Node,
+  selector: ArrayLike<Node> | Node,
   config?: Options
 ) {
-  return _flatpickr(selector, config);
+  if (selector instanceof Node) {
+    return _flatpickr([selector], config);
+  } else {
+    return _flatpickr(selector, config);
+  }
 } as FlatpickrFn;
 
 /* istanbul ignore next */
