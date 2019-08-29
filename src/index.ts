@@ -612,7 +612,7 @@ function FlatpickrInstance(
 
     const customAppend =
       self.config.appendTo !== undefined &&
-      self.config.appendTo.nodeType !== undefined;
+      self.config.appendTo.nodeType !== undefined;      
 
     if (self.config.inline || self.config.static) {
       self.calendarContainer.classList.add(
@@ -1739,7 +1739,7 @@ function FlatpickrInstance(
 
   function open(
     e?: FocusEvent | MouseEvent,
-    positionElement = self._positionElement
+    positionElement = self._positionElement,
   ) {
     if (self.isMobile === true) {
       if (e) {
@@ -2121,11 +2121,37 @@ function FlatpickrInstance(
       if (selectedIndex) self.selectedDates.splice(parseInt(selectedIndex), 1);
       else self.selectedDates.push(selectedDate);
     } else if (self.config.mode === "range") {
+      const dates = self.selectedDates;
       if (self.selectedDates.length === 2) {
+        // console.log( "before", self.latestSelectedDateObj );
+        // const idx = compareDates(selectedDate, dates[0], true);
         self.clear(false, false);
+        if (self._direction < 0 ) {
+          if (selectedDate < dates[1]) {
+            self.selectedDates = [dates[1], selectedDate]
+          } else {
+            self._direction = 0;
+            self.selectedDates = [selectedDate]
+          }
+        } else {
+          if (selectedDate > dates[0]) {
+            self.selectedDates = [selectedDate, dates[0]]
+          } else {
+            self._direction = 0;
+            self.selectedDates = [selectedDate]
+          }
+        }
+      } else {
+        self.selectedDates.push(selectedDate);
       }
       self.latestSelectedDateObj = selectedDate;
-      self.selectedDates.push(selectedDate);
+
+      // console.log("idex", compareDates(selectedDate, self.selectedDates[0], true))
+      // self.selectedDates.pop();
+
+      // if (selectedDate < self.selectedDates[0]) {
+      //   self.selectedDates.sort((a, b) => a.getTime() - b.getTime());
+      // }
 
       // unless selecting same date twice, sort ascendingly
       if (compareDates(selectedDate, self.selectedDates[0], true) !== 0)
